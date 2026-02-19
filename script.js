@@ -1,14 +1,15 @@
-/* ========================================
-   ENRO Romblon - Professional Website Script
-   Environment & Natural Resources Office
-   ======================================== */
+
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize all interactive features
+    'use strict';
+    
+    // Initialize all features
     initMobileMenu();
     initScrollEffects();
     initSmoothScroll();
-    checkImageFallbacks();
+    initImageFallbacks();
+    initScrollAnimations();
+    initActiveNavHighlighter();
 });
 
 /* ========================================
@@ -18,41 +19,60 @@ function initMobileMenu() {
     const menuToggle = document.getElementById('menuToggle');
     const mainNav = document.querySelector('.main-nav');
     
-    if (menuToggle && mainNav) {
-        menuToggle.addEventListener('click', function() {
-            // Toggle mobile menu
-            mainNav.classList.toggle('active');
-            
-            // Change icon between bars and times
+    if (!menuToggle || !mainNav) return;
+    
+    menuToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        toggleMobileMenu();
+    });
+    
+    // Close menu when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!mainNav.contains(e.target) && !menuToggle.contains(e.target)) {
+            closeMobileMenu();
+        }
+    });
+    
+    // Close menu when pressing Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && mainNav.classList.contains('active')) {
+            closeMobileMenu();
+        }
+    });
+    
+    // Close menu when clicking a nav link
+    const navLinks = mainNav.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            closeMobileMenu();
+        });
+    });
+    
+    function toggleMobileMenu() {
+        const isActive = mainNav.classList.contains('active');
+        const icon = menuToggle.querySelector('i');
+        
+        mainNav.classList.toggle('active');
+        
+        if (!isActive) {
+            icon.classList.remove('fa-bars');
+            icon.classList.add('fa-times');
+            document.body.style.overflow = 'hidden';
+        } else {
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-bars');
+            document.body.style.overflow = '';
+        }
+    }
+    
+    function closeMobileMenu() {
+        if (mainNav.classList.contains('active')) {
+            mainNav.classList.remove('active');
             const icon = menuToggle.querySelector('i');
-            if (mainNav.classList.contains('active')) {
-                icon.classList.remove('fa-bars');
-                icon.classList.add('fa-times');
-            } else {
-                icon.classList.remove('fa-times');
-                icon.classList.add('fa-bars');
-            }
-        });
-        
-        // Close menu when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!mainNav.contains(e.target) && !menuToggle.contains(e.target)) {
-                mainNav.classList.remove('active');
-                const icon = menuToggle.querySelector('i');
-                icon.classList.remove('fa-times');
-                icon.classList.add('fa-bars');
-            }
-        });
-        
-        // Close menu when pressing Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && mainNav.classList.contains('active')) {
-                mainNav.classList.remove('active');
-                const icon = menuToggle.querySelector('i');
-                icon.classList.remove('fa-times');
-                icon.classList.add('fa-bars');
-            }
-        });
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-bars');
+            document.body.style.overflow = '';
+        }
     }
 }
 
@@ -62,41 +82,51 @@ function initMobileMenu() {
 function initScrollEffects() {
     const header = document.querySelector('.site-header');
     
-    if (header) {
-        window.addEventListener('scroll', function() {
-            if (window.scrollY > 50) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
-        });
-    }
+    if (!header) return;
+    
+    let lastScrollY = window.scrollY;
+    let ticking = false;
+    
+    window.addEventListener('scroll', function() {
+        lastScrollY = window.scrollY;
+        
+        if (!ticking) {
+            window.requestAnimationFrame(function() {
+                if (lastScrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+                ticking = false;
+            });
+            
+            ticking = true;
+        }
+    });
 }
 
 /* ========================================
    Smooth Scroll for Anchor Links
    ======================================== */
 function initSmoothScroll() {
-    const anchorLinks = document.querySelectorAll('a[href^="#"]');
+    const anchorLinks = document.querySelectorAll('a[href^="#"]:not([href="#"])');
     
     anchorLinks.forEach(link => {
         link.addEventListener('click', function(e) {
             const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
             
-            if (targetId && targetId !== '#') {
-                const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                e.preventDefault();
                 
-                if (targetElement) {
-                    e.preventDefault();
-                    
-                    const headerHeight = document.querySelector('.site-header')?.offsetHeight || 70;
-                    const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
-                    
-                    window.scrollTo({
-                        top: targetPosition,
-                        behavior: 'smooth'
-                    });
-                }
+                const header = document.querySelector('.site-header');
+                const headerHeight = header ? header.offsetHeight : 80;
+                const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+                
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
             }
         });
     });
@@ -105,24 +135,30 @@ function initSmoothScroll() {
 /* ========================================
    Image Fallback Handler
    ======================================== */
-function checkImageFallbacks() {
+function initImageFallbacks() {
+    // Handle forest image fallback
+    const forestCard = document.querySelector('.forest-card');
     const forestImage = document.querySelector('.forest-image');
-    const imageCard = document.querySelector('.image-card');
     
     if (forestImage) {
         forestImage.addEventListener('error', function() {
-            // Hide the broken image
-            this.style.display = 'none';
-            
-            // Add fallback class to parent
-            if (imageCard) {
-                imageCard.classList.add('no-image');
-                imageCard.innerHTML = '<div><i class="fas fa-tree" style="font-size: 4rem; margin-bottom: 1rem;"></i><p>Protecting Romblon\'s Natural Heritage</p></div>';
+            if (forestCard) {
+                forestCard.classList.add('no-image');
+                // Create fallback content if not exists
+                if (!forestCard.querySelector('.fallback-content')) {
+                    const fallback = document.createElement('div');
+                    fallback.className = 'fallback-content';
+                    fallback.innerHTML = `
+                        <i class="fas fa-tree" aria-hidden="true"></i>
+                        <p>Protecting Romblon's Natural Heritage</p>
+                    `;
+                    forestCard.appendChild(fallback);
+                }
             }
         });
     }
     
-    // Check logo
+    // Handle logo fallback
     const logo = document.querySelector('.logo');
     if (logo) {
         logo.addEventListener('error', function() {
@@ -136,9 +172,13 @@ function checkImageFallbacks() {
 }
 
 /* ========================================
-   Intersection Observer for Animations
+   Scroll Animations with Intersection Observer
    ======================================== */
 function initScrollAnimations() {
+    const fadeElements = document.querySelectorAll('.fade-in');
+    
+    if (fadeElements.length === 0) return;
+    
     const observerOptions = {
         root: null,
         rootMargin: '0px',
@@ -148,14 +188,14 @@ function initScrollAnimations() {
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                entry.target.classList.add('animate-in');
+                entry.target.classList.add('visible');
+                // Optional: unobserve after animation
+                observer.unobserve(entry.target);
             }
         });
     }, observerOptions);
     
-    // Observe cards and sections for animation
-    const animatedElements = document.querySelectorAll('.card, .image-card');
-    animatedElements.forEach(el => observer.observe(el));
+    fadeElements.forEach(el => observer.observe(el));
 }
 
 /* ========================================
@@ -165,45 +205,67 @@ function initActiveNavHighlighter() {
     const sections = document.querySelectorAll('section[id]');
     const navLinks = document.querySelectorAll('.nav-link');
     
-    if (sections.length && navLinks.length) {
-        window.addEventListener('scroll', function() {
-            let current = '';
-            
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                const sectionHeight = section.clientHeight;
+    if (sections.length === 0 || navLinks.length === 0) return;
+    
+    let ticking = false;
+    
+    window.addEventListener('scroll', function() {
+        if (!ticking) {
+            window.requestAnimationFrame(function() {
+                const scrollY = window.pageYOffset;
+                const header = document.querySelector('.site-header');
+                const headerHeight = header ? header.offsetHeight : 80;
                 
-                if (scrollY >= sectionTop - 200) {
-                    current = section.getAttribute('id');
-                }
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop - headerHeight - 10;
+                    const sectionBottom = sectionTop + section.offsetHeight;
+                    const sectionId = section.getAttribute('id');
+                    
+                    if (scrollY >= sectionTop && scrollY < sectionBottom) {
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === '#' + sectionId) {
+                                link.classList.add('active');
+                            }
+                        });
+                    }
+                });
+                
+                ticking = false;
             });
             
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === '#' + current) {
-                    link.classList.add('active');
-                }
-            });
-        });
-    }
+            ticking = true;
+        }
+    });
 }
 
-// Add CSS for scroll animations
-const style = document.createElement('style');
-style.textContent = `
-    .animate-in {
-        opacity: 0;
-        transform: translateY(30px);
-        transition: opacity 0.6s ease, transform 0.6s ease;
-    }
+/* ========================================
+   Preload Images
+   ======================================== */
+function preloadImages() {
+    const images = document.querySelectorAll('img[data-src]');
     
-    .animate-in.animate-in {
-        opacity: 1;
-        transform: translateY(0);
-    }
-`;
-document.head.appendChild(style);
+    if (images.length === 0) return;
+    
+    const imageObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const img = entry.target;
+                img.src = img.dataset.src;
+                img.classList.add('loaded');
+                imageObserver.unobserve(img);
+            }
+        });
+    });
+    
+    images.forEach(img => imageObserver.observe(img));
+}
 
-// Initialize scroll animations
-document.addEventListener('DOMContentLoaded', initScrollAnimations);
-document.addEventListener('DOMContentLoaded', initActiveNavHighlighter);
+// Add loading class to images
+document.querySelectorAll('img').forEach(img => {
+    img.classList.add('loading');
+    img.addEventListener('load', function() {
+        this.classList.remove('loading');
+        this.classList.add('loaded');
+    });
+});
