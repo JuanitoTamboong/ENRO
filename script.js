@@ -1,271 +1,235 @@
-
-
 document.addEventListener('DOMContentLoaded', function() {
-    'use strict';
-    
-    // Initialize all features
     initMobileMenu();
     initScrollEffects();
     initSmoothScroll();
-    initImageFallbacks();
     initScrollAnimations();
     initActiveNavHighlighter();
+    initCounterAnimation();
+    initFormHandlers();
+    initImageFallbacks();
+    initPageLoad();
 });
 
-/* ========================================
-   Mobile Menu Toggle
-   ======================================== */
 function initMobileMenu() {
     const menuToggle = document.getElementById('menuToggle');
     const mainNav = document.querySelector('.main-nav');
-    
     if (!menuToggle || !mainNav) return;
-    
-    menuToggle.addEventListener('click', function(e) {
-        e.stopPropagation();
-        toggleMobileMenu();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'menu-overlay';
+    document.body.appendChild(overlay);
+
+    function toggleMenu(open) {
+        const isOpen = open !== undefined ? open : !mainNav.classList.contains('active');
+        mainNav.classList.toggle('active', isOpen);
+        menuToggle.classList.toggle('active', isOpen);
+        overlay.classList.toggle('active', isOpen);
+        document.body.classList.toggle('menu-open', isOpen);
+        const icon = menuToggle.querySelector('i');
+        icon.classList.toggle('fa-bars', !isOpen);
+        icon.classList.toggle('fa-times', isOpen);
+    }
+
+    menuToggle.addEventListener('click', (e) => {
+        e.preventDefault();
+        toggleMenu();
     });
-    
-    // Close menu when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!mainNav.contains(e.target) && !menuToggle.contains(e.target)) {
-            closeMobileMenu();
-        }
-    });
-    
-    // Close menu when pressing Escape key
-    document.addEventListener('keydown', function(e) {
+
+    overlay.addEventListener('click', () => toggleMenu(false));
+
+    document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && mainNav.classList.contains('active')) {
-            closeMobileMenu();
+            toggleMenu(false);
         }
     });
-    
-    // Close menu when clicking a nav link
+
     const navLinks = mainNav.querySelectorAll('.nav-link');
     navLinks.forEach(link => {
         link.addEventListener('click', () => {
-            closeMobileMenu();
+            setTimeout(() => toggleMenu(false), 150);
         });
     });
-    
-    function toggleMobileMenu() {
-        const isActive = mainNav.classList.contains('active');
-        const icon = menuToggle.querySelector('i');
-        
-        mainNav.classList.toggle('active');
-        
-        if (!isActive) {
-            icon.classList.remove('fa-bars');
-            icon.classList.add('fa-times');
-            document.body.style.overflow = 'hidden';
-        } else {
-            icon.classList.remove('fa-times');
-            icon.classList.add('fa-bars');
-            document.body.style.overflow = '';
+
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768 && mainNav.classList.contains('active')) {
+            toggleMenu(false);
         }
-    }
-    
-    function closeMobileMenu() {
-        if (mainNav.classList.contains('active')) {
-            mainNav.classList.remove('active');
-            const icon = menuToggle.querySelector('i');
-            icon.classList.remove('fa-times');
-            icon.classList.add('fa-bars');
-            document.body.style.overflow = '';
-        }
-    }
+    });
 }
 
-/* ========================================
-   Scroll Effects
-   ======================================== */
 function initScrollEffects() {
     const header = document.querySelector('.site-header');
-    
     if (!header) return;
-    
-    let lastScrollY = window.scrollY;
+
     let ticking = false;
-    
-    window.addEventListener('scroll', function() {
-        lastScrollY = window.scrollY;
-        
+    window.addEventListener('scroll', () => {
         if (!ticking) {
-            window.requestAnimationFrame(function() {
-                if (lastScrollY > 50) {
-                    header.classList.add('scrolled');
-                } else {
-                    header.classList.remove('scrolled');
-                }
+            window.requestAnimationFrame(() => {
+                header.classList.toggle('scrolled', window.scrollY > 50);
                 ticking = false;
             });
-            
             ticking = true;
         }
     });
 }
 
-/* ========================================
-   Smooth Scroll for Anchor Links
-   ======================================== */
 function initSmoothScroll() {
-    const anchorLinks = document.querySelectorAll('a[href^="#"]:not([href="#"])');
-    
-    anchorLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            const targetId = this.getAttribute('href');
-            const targetElement = document.querySelector(targetId);
-            
-            if (targetElement) {
+    document.querySelectorAll('a[href^="#"]:not([href="#"])').forEach(link => {
+        link.addEventListener('click', (e) => {
+            const target = document.querySelector(link.getAttribute('href'));
+            if (target) {
                 e.preventDefault();
-                
-                const header = document.querySelector('.site-header');
-                const headerHeight = header ? header.offsetHeight : 80;
-                const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - headerHeight;
-                
+                const headerHeight = document.querySelector('.site-header').offsetHeight;
                 window.scrollTo({
-                    top: targetPosition,
+                    top: target.getBoundingClientRect().top + window.scrollY - headerHeight,
                     behavior: 'smooth'
                 });
+                history.pushState(null, null, link.getAttribute('href'));
             }
         });
     });
 }
 
-/* ========================================
-   Image Fallback Handler
-   ======================================== */
-function initImageFallbacks() {
-    // Handle forest image fallback
-    const forestCard = document.querySelector('.forest-card');
-    const forestImage = document.querySelector('.forest-image');
-    
-    if (forestImage) {
-        forestImage.addEventListener('error', function() {
-            if (forestCard) {
-                forestCard.classList.add('no-image');
-                // Create fallback content if not exists
-                if (!forestCard.querySelector('.fallback-content')) {
-                    const fallback = document.createElement('div');
-                    fallback.className = 'fallback-content';
-                    fallback.innerHTML = `
-                        <i class="fas fa-tree" aria-hidden="true"></i>
-                        <p>Protecting Romblon's Natural Heritage</p>
-                    `;
-                    forestCard.appendChild(fallback);
-                }
-            }
-        });
-    }
-    
-    // Handle logo fallback
-    const logo = document.querySelector('.logo');
-    if (logo) {
-        logo.addEventListener('error', function() {
-            this.style.display = 'none';
-            const logoArea = document.querySelector('.logo-area');
-            if (logoArea) {
-                logoArea.querySelector('.logo-text').style.marginLeft = '0';
-            }
-        });
-    }
-}
-
-/* ========================================
-   Scroll Animations with Intersection Observer
-   ======================================== */
 function initScrollAnimations() {
-    const fadeElements = document.querySelectorAll('.fade-in');
-    
-    if (fadeElements.length === 0) return;
-    
-    const observerOptions = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.1
-    };
-    
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-                // Optional: unobserve after animation
+                setTimeout(() => entry.target.classList.add('visible'), 100);
                 observer.unobserve(entry.target);
             }
         });
-    }, observerOptions);
-    
-    fadeElements.forEach(el => observer.observe(el));
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 }
 
-/* ========================================
-   Active Navigation Link Highlighter
-   ======================================== */
 function initActiveNavHighlighter() {
     const sections = document.querySelectorAll('section[id]');
     const navLinks = document.querySelectorAll('.nav-link');
-    
-    if (sections.length === 0 || navLinks.length === 0) return;
-    
+    if (!sections.length || !navLinks.length) return;
+
     let ticking = false;
-    
-    window.addEventListener('scroll', function() {
+    window.addEventListener('scroll', () => {
         if (!ticking) {
-            window.requestAnimationFrame(function() {
-                const scrollY = window.pageYOffset;
-                const header = document.querySelector('.site-header');
-                const headerHeight = header ? header.offsetHeight : 80;
-                
+            window.requestAnimationFrame(() => {
+                const scrollY = window.scrollY;
+                const headerHeight = document.querySelector('.site-header').offsetHeight;
+                let current = '';
+
                 sections.forEach(section => {
-                    const sectionTop = section.offsetTop - headerHeight - 10;
-                    const sectionBottom = sectionTop + section.offsetHeight;
-                    const sectionId = section.getAttribute('id');
-                    
-                    if (scrollY >= sectionTop && scrollY < sectionBottom) {
-                        navLinks.forEach(link => {
-                            link.classList.remove('active');
-                            if (link.getAttribute('href') === '#' + sectionId) {
-                                link.classList.add('active');
-                            }
-                        });
+                    const top = section.offsetTop - headerHeight - 20;
+                    const bottom = top + section.offsetHeight;
+                    if (scrollY >= top && scrollY < bottom) {
+                        current = section.getAttribute('id');
                     }
                 });
-                
+
+                navLinks.forEach(link => {
+                    link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+                });
                 ticking = false;
             });
-            
             ticking = true;
         }
     });
 }
 
-/* ========================================
-   Preload Images
-   ======================================== */
-function preloadImages() {
-    const images = document.querySelectorAll('img[data-src]');
-    
-    if (images.length === 0) return;
-    
-    const imageObserver = new IntersectionObserver((entries) => {
+function initCounterAnimation() {
+    const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                const img = entry.target;
-                img.src = img.dataset.src;
-                img.classList.add('loaded');
-                imageObserver.unobserve(img);
+                const el = entry.target;
+                const target = parseInt(el.getAttribute('data-target'));
+                const duration = 2000;
+                const startTime = performance.now();
+
+                function animate(now) {
+                    const progress = Math.min((now - startTime) / duration, 1);
+                    el.textContent = Math.floor(target * (1 - Math.pow(1 - progress, 3))).toLocaleString();
+                    if (progress < 1) requestAnimationFrame(animate);
+                    else el.textContent = target.toLocaleString();
+                }
+                requestAnimationFrame(animate);
+                observer.unobserve(el);
             }
         });
-    });
-    
-    images.forEach(img => imageObserver.observe(img));
+    }, { threshold: 0.3 });
+
+    document.querySelectorAll('.stat-number').forEach(el => observer.observe(el));
 }
 
-// Add loading class to images
-document.querySelectorAll('img').forEach(img => {
-    img.classList.add('loading');
-    img.addEventListener('load', function() {
-        this.classList.remove('loading');
-        this.classList.add('loaded');
+function initFormHandlers() {
+    const contactForm = document.getElementById('contactForm');
+    if (contactForm) {
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = contactForm.querySelector('.btn-submit');
+            const originalText = btn.textContent;
+
+            btn.textContent = 'Sending...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                btn.textContent = 'Message Sent!';
+                btn.style.backgroundColor = 'var(--primary-light)';
+
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                    btn.style.backgroundColor = '';
+                    contactForm.reset();
+                    setTimeout(() => alert('Thank you for your message!'), 100);
+                }, 1500);
+            }, 800);
+        });
+    }
+}
+
+function initImageFallbacks() {
+    const forestImage = document.getElementById('forestImage');
+    if (forestImage) {
+        forestImage.addEventListener('error', function() {
+            this.style.display = 'none';
+            const card = this.closest('.forest-card');
+            card.classList.add('no-image');
+            if (!card.querySelector('.fallback-content')) {
+                const fallback = document.createElement('div');
+                fallback.className = 'fallback-content';
+                fallback.innerHTML = '<i class="fas fa-tree"></i><p>Protecting Romblon\'s Natural Heritage</p>';
+                card.appendChild(fallback);
+            }
+        });
+
+        if (forestImage.complete && forestImage.naturalHeight === 0) {
+            forestImage.dispatchEvent(new Event('error'));
+        }
+    }
+
+    const logo = document.getElementById('logo');
+    if (logo) {
+        logo.addEventListener('error', function() {
+            this.style.display = 'none';
+        });
+    }
+
+    const footerLogo = document.querySelector('.footer-logo');
+    if (footerLogo) {
+        footerLogo.addEventListener('error', function() {
+            this.style.display = 'none';
+        });
+    }
+}
+
+function initPageLoad() {
+    window.addEventListener('load', () => {
+        document.body.classList.add('loaded');
+        setTimeout(() => {
+            document.querySelectorAll('.fade-in').forEach(el => {
+                const rect = el.getBoundingClientRect();
+                if (rect.top < window.innerHeight && rect.bottom > 0) {
+                    el.classList.add('visible');
+                }
+            });
+        }, 100);
     });
-});
+}
