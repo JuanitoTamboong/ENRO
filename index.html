@@ -3,174 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ENVIRONMENT AND NATURAL RESOURCES OFFICE - ROMBLON</title>
+    <title>ENRO Romblon | Environment & Natural Resources Office</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- website icon -->
+    <link rel="icon" href="assets/enro-logo.png">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <i class="fas fa-leaf"></i>
-                <span>ENRO-Romblon</span>
+        <header class="site-header">
+        <div class="container header-flex">
+            <div class="logo-area">
+                <img src="assets/enro-logo.png" alt="ENRO Romblon official logo" class="logo">
+                <span class="logo-text">ENRO Romblon</span>
             </div>
-            <ul class="nav-menu">
-                <li class="nav-item">
-                    <a href="#" class="nav-link active">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#about" class="nav-link">About</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#services" class="nav-link">Services</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#contact" class="nav-link">Contact</a>
-                </li>
-            </ul>
-            <div class="hamburger">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </div>
+            <nav class="main-nav" aria-label="Main navigation">
+             
+                <a href="/" class="nav-link active" aria-current="page">Home</a>
+                <a href="/about" class="nav-link">About</a>
+                <a href="/contact" class="nav-link">Contact</a>
+            </nav>
+            <button class="mobile-toggle" aria-label="menu" id="menuToggle"><i class="fas fa-bars"></i></button>
         </div>
-    </nav>
+    </header>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-content">
-            <h1>Environment and Natural Resources Office</h1>
-            <p class="hero-subtitle">Provincial Government of Romblon</p>
-            <p class="hero-description">Working towards sustainable utilization, development and management of our environment and natural resources.</p>
-            <a href="#about" class="btn btn-primary">Learn More</a>
-        </div>
-        <div class="hero-overlay"></div>
-    </section>
+    <main>
+      
+        <section class="hero">
 
-    <!-- About Section -->
-    <section id="about" class="section">
-        <div class="container">
-            <div class="section-header">
-                <h2>About ENRO</h2>
-                <div class="divider"></div>
+            <div class="hero-overlay"></div>
+            <div class="container hero-content">
+                <h1 class="hero-title">Welcome!</h1>
+                <p class="hero-text">
+                    This is the official website of the Environment and Natural Resources Office (ENRO) under the Provincial Government of Romblon.
+                </p>
             </div>
-            <div class="about-content">
-                <div class="about-text">
-                    <p>Welcome to the official website of the Environment and Natural Resources Office (ENRO) under the Provincial Government of Romblon. We are dedicated to preserving and sustainably managing the natural resources of our beautiful province.</p>
-                </div>
-                <div class="about-cards">
-                    <div class="card">
-                        <div class="card-icon">
-                            <i class="fas fa-eye"></i>
-                        </div>
-                        <h3>VISION</h3>
-                        <p>Prosperity through sustainable utilization, development and management of the environment and natural resources of Romblon.</p>
-                    </div>
-                    <div class="card">
-                        <div class="card-icon">
-                            <i class="fas fa-bullseye"></i>
-                        </div>
-                        <h3>MISSION</h3>
-                        <p>To sustain economic development of the environment and natural resources of Romblon, promote responsible mining towards a socially, economically and environmentally stable and sustainable mineral industry using environment friendly technologies and proactive people's participation.</p>
-                    </div>
-                </div>
+        </section>
+        <section class="vision-mission container">
+            <div class="card-grid">
+                <article class="card">
+                    <i class="fas fa-tree card-icon" aria-hidden="true"></i>
+                    <h2>Vision</h2>
+                    <p>Prosperity through sustainable utilization, development and management of the environment and natural resources of Romblon.</p>
+                </article>
+                <article class="card">
+                    <i class="fas fa-hand-holding-heart card-icon" aria-hidden="true"></i>
+                    <h2>Mission</h2>
+                    <p>To sustain economic development of the environment and natural resources of Romblon, promote responsible mining towards a socially, economically and environmentally stable and sustainable mineral industry using environment friendly technologies and pro-active people’s participation.</p>
+                </article>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Services Section -->
-    <section id="services" class="section bg-light">
-        <div class="container">
-            <div class="section-header">
-                <h2>Our Services</h2>
-                <div class="divider"></div>
-            </div>
-            <div class="services-grid">
-                <div class="service-item">
-                    <div class="service-icon">
-                        <i class="fas fa-tree"></i>
-                    </div>
-                    <h3>Forest Management</h3>
-                    <p>Sustainable forest conservation and reforestation programs</p>
-                </div>
-                <div class="service-item">
-                    <div class="service-icon">
-                        <i class="fas fa-water"></i>
-                    </div>
-                    <h3>Water Resources</h3>
-                    <p>Protection and sustainable management of water resources</p>
-                </div>
-                <div class="service-item">
-                    <div class="service-icon">
-                        <i class="fas fa-mountain"></i>
-                    </div>
-                    <h3>Mining Regulation</h3>
-                    <p>Responsible mining oversight and environmental compliance</p>
-                </div>
-                <div class="service-item">
-                    <div class="service-icon">
-                        <i class="fas fa-paw"></i>
-                    </div>
-                    <h3>Wildlife Protection</h3>
-                    <p>Conservation of biodiversity and endangered species</p>
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- Contact Section -->
-    <section id="contact" class="section">
-        <div class="container">
-            <div class="section-header">
-                <h2>Contact Us</h2>
-                <div class="divider"></div>
+        <section class="forest-spotlight container">
+            <h2>Our Commitment</h2>
+            <div class="image-card">
+        
+                <img src="assets/enro-background.png" alt="Lush forest in Romblon" class="forest-image" onerror="this.style.display='none'; this.parentElement.classList.add('no-image'); this.parentElement.innerHTML='<div><i class=\'fas fa-tree\' style=\'font-size: 4rem; margin-bottom: 1rem;\'></i><p>Protecting Romblon\'s Natural Heritage for Future Generations</p></div>'">
+                <p class="image-caption">Protecting Romblon's natural heritage for future generations.</p>
             </div>
-            <div class="contact-content">
-                <div class="contact-info">
-                    <div class="contact-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <div>
-                            <h4>Location</h4>
-                            <p>Provincial Capitol Building<br>Romblon, Romblon</p>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fas fa-phone"></i>
-                        <div>
-                            <h4>Phone</h4>
-                            <p>(+63) XXX-XXXX</p>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fas fa-envelope"></i>
-                        <div>
-                            <h4>Email</h4>
-                            <p>enro.romblon@province.gov.ph</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+        </section>
+    </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-logo">
-                    <i class="fas fa-leaf"></i>
-                    <span>ENRO-Romblon</span>
-                </div>
-                <p class="footer-text">Environment and Natural Resources Office - Provincial Government of Romblon</p>
-                <p class="copyright">&copy; 2026 Official Website of ENRO-Romblon. All Rights Reserved.</p>
+    <!-- separate footer -->
+    <footer class="site-footer">
+        <div class="container footer-content">
+            <p>© 2026 Official Website of ENRO-Romblon</p>
+            <div class="footer-links">
+                <a href="/privacy">Privacy</a> | <a href="/terms">Terms</a>
             </div>
         </div>
     </footer>
 
+    <!-- separate javascript file (linked) -->
     <script src="script.js"></script>
 </body>
 </html>
